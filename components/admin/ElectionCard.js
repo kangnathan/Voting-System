@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ToastProvider'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
@@ -26,8 +27,9 @@ const statusConfig = {
   ended:    { color: 'default', label: 'Ended' },
 }
 
-export function ElectionCard({ election }) {
+export function ElectionCard({ election, onDeleted }) {
   const router = useRouter()
+  const toast = useToast()
   const [showQR, setShowQR] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -41,9 +43,11 @@ export function ElectionCard({ election }) {
     setDeleting(true)
     const res = await fetch(`/api/admin/elections/${election.id}`, { method: 'DELETE' })
     if (res.ok) {
-      router.refresh()
+      toast.success('Election deleted')
+      if (onDeleted) onDeleted(election.id)
+      else router.refresh()
     } else {
-      alert('Failed to delete election.')
+      toast.error('Failed to delete election')
       setDeleting(false)
     }
   }
@@ -170,7 +174,7 @@ export function ElectionCard({ election }) {
         </Box>
       </Paper>
 
-      <QRModal open={showQR} onClose={() => setShowQR(false)} url={publicUrl} title={election.title} />
+      <QRModal open={showQR} onClose={() => setShowQR(false)} url={publicUrl} title={election.title} description={election.description} />
     </>
   )
 }

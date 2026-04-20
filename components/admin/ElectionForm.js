@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ToastProvider'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
@@ -12,8 +13,6 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
-import Divider from '@mui/material/Divider'
-import Alert from '@mui/material/Alert'
 import IconButton from '@mui/material/IconButton'
 import Grid from '@mui/material/Grid'
 import AddIcon from '@mui/icons-material/Add'
@@ -23,6 +22,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 
 export function ElectionForm({ election }) {
   const router = useRouter()
+  const toast = useToast()
   const isEdit = !!election
 
   const [title, setTitle] = useState(election?.title || '')
@@ -38,7 +38,6 @@ export function ElectionForm({ election }) {
   )
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState('')
 
   function addOption() { setOptions([...options, '']) }
   function removeOption(index) {
@@ -67,7 +66,6 @@ export function ElectionForm({ election }) {
     e.preventDefault()
     if (!validate()) return
     setLoading(true)
-    setApiError('')
 
     const payload = {
       title: title.trim(),
@@ -90,10 +88,11 @@ export function ElectionForm({ election }) {
     setLoading(false)
 
     if (!res.ok) {
-      setApiError(data.error || 'Something went wrong')
+      toast.error(data.error || 'Something went wrong')
       return
     }
 
+    toast.success(isEdit ? 'Election saved' : 'Election created')
     router.push('/admin/dashboard')
     router.refresh()
   }
@@ -223,8 +222,6 @@ export function ElectionForm({ election }) {
               </Stack>
             </Box>
           </Paper>
-
-          {apiError && <Alert severity="error" sx={{ borderRadius: 1.5 }}>{apiError}</Alert>}
 
           {/* Actions */}
           <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'flex-end', pt: 1 }}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useToast } from '@/components/ToastProvider'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -27,6 +28,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { formatDate } from '@/lib/utils'
 
 export function UsersClient({ users: initialUsers, currentUserId }) {
+  const toast = useToast()
   const [users, setUsers] = useState(initialUsers)
   const [showAdd, setShowAdd] = useState(false)
   const [newEmail, setNewEmail] = useState('')
@@ -54,6 +56,7 @@ export function UsersClient({ users: initialUsers, currentUserId }) {
       setNewEmail('')
       setNewPassword('')
       setNewRole('admin')
+      toast.success('User added')
     } else {
       setAddError(data.error || 'Failed to create user')
     }
@@ -64,9 +67,10 @@ export function UsersClient({ users: initialUsers, currentUserId }) {
     const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setUsers(users.filter((u) => u.id !== id))
+      toast.success('User removed')
     } else {
       const data = await res.json()
-      alert(data.error || 'Failed to delete user')
+      toast.error(data.error || 'Failed to remove user')
     }
   }
 

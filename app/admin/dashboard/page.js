@@ -1,14 +1,13 @@
 import Link from 'next/link'
 import { getAuthUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { ElectionCard } from '@/components/admin/ElectionCard'
+import { ElectionList } from '@/components/admin/ElectionList'
 import { getElectionStatus } from '@/lib/utils'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
-import Divider from '@mui/material/Divider'
 import AddIcon from '@mui/icons-material/Add'
 import HowToVoteOutlinedIcon from '@mui/icons-material/HowToVoteOutlined'
 
@@ -84,21 +83,7 @@ export default async function DashboardPage() {
           </Link>
         </Paper>
       ) : (
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              All Elections ({totalElections})
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 2.5, borderColor: '#f3f4f6' }} />
-          <Grid container spacing={2}>
-            {elections.map((election) => (
-              <Grid key={election.id} size={{ xs: 12, md: 6, xl: 4 }}>
-                <ElectionCard election={election} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+        <ElectionList elections={elections} />
       )}
     </Box>
   )
