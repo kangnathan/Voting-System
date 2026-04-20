@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['192.168.1.172'],
-};
+  allowedDevOrigins: ["voting-system-lyart-nine.vercel.app"],
+}
 
-export default nextConfig;
+export default nextConfig
