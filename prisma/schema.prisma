@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  super_admin
+  admin
+}
+
+model Profile {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  password_hash String
+  role          Role       @default(admin)
+  created_at    DateTime   @default(now())
+  elections     Election[]
+}
+
+model Election {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  start_time  DateTime?
+  end_time    DateTime?
+  created_at  DateTime  @default(now())
+  created_by  String
+  creator     Profile   @relation(fields: [created_by], references: [id])
+  options     Option[]
+  votes       Vote[]
+}
+
+model Option {
+  id          String   @id @default(cuid())
+  election_id String
+  option_text String
+  election    Election @relation(fields: [election_id], references: [id], onDelete: Cascade)
+  votes       Vote[]
+}
+
+model Vote {
+  id               String   @id @default(cuid())
+  election_id      String
+  option_id        String
+  fingerprint_hash String
+  created_at       DateTime @default(now())
+  election         Election @relation(fields: [election_id], references: [id], onDelete: Cascade)
+  option           Option   @relation(fields: [option_id], references: [id])
+
+  @@unique([election_id, fingerprint_hash])
+}
